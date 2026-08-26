@@ -1,0 +1,53 @@
+# Configuration for ${project.name}
+#
+# Version: ${project.version}
+
+plugin-prefix: '&6RegionRegen &8>> '
+debug-enabled: false
+
+# Default regeneration time in seconds.
+# Default value: 10
+default-delay: 10
+
+# Disable block physics for blocks above a block with a pending regen task
+# Prevents short grass, flowers, etc. from breaking when the block below is removed
+# Default value: true
+disable-physics: true
+
+# List of block materials that should never be regenerated.
+# Use exact Bukkit Material names (e.g. FIRE, LAVA, WATER)
+excluded-blocks:
+  - FIRE
+
+# Prevent a player being obstructed by a regenerating block.
+# It won't regenerate when a player is in range.
+# Default value:
+# obstruct-prevention:
+#  enabled: true
+#  radius: 1
+obstruct-prevention:
+  enabled: true
+  radius: 1
+
+events:
+  break:
+    enabled: true
+    # Deny drops from blocks affected?
+    # Note: Also denies exp drop.
+    deny-drops: true
+  explosion:
+    enabled: false
+    deny-drops: false
+  fire:
+    enabled: true
+  lava:
+    enabled: true
+  piston:
+    enabled: true
+
+# Messages sent to players. Color codes with & are supported.
+messages:
+  reloaded: '&7Reloaded.'
+  invalid-world: '&cWorld &f%param% &cis invalid.'
+  reset-done: '&7Reset &f%count% &7regeneration tasks.'
+  reset-done-world: '&7Reset &f%count% &7regeneration tasks in world &f%world%'

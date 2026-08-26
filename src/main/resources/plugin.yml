@@ -1,0 +1,10 @@
+name: ${project.name}
+main: space.devport.danny.regionregen.RegionRegenPlugin
+version: ${project.version}
+api-version: '1.21'
+authors: [Danny]
+depend: [WorldGuard]
+commands:
+  regionregen:
+    aliases: [rr, rrg]
+    description: Main plugin command

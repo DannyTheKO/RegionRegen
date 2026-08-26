@@ -20,6 +20,12 @@ public class PhysicsListener implements Listener {
 
         if (plugin.getRegenerationManager().hasTaskAt(changedBlock.getLocation())) {
             event.setCancelled(true);
+            return;
+        }
+
+        if (plugin.getDecayManager().hasTaskAt(changedBlock.getLocation())
+                || plugin.getDecayManager().hasTaskAt(event.getBlock().getLocation())) {
+            event.setCancelled(true);
         }
     }
 }

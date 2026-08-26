@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import space.devport.danny.regionregen.RegionRegenPlugin;
+import space.devport.danny.regionregen.system.struct.DecayTask;
 import space.devport.danny.regionregen.system.struct.RegenerationTask;
 
 import java.util.ArrayList;
@@ -74,6 +75,13 @@ public class RegionRegenCommand implements CommandExecutor, TabCompleter {
             if (task.getLocation().getWorld() == null) continue;
             if (world == null || task.getLocation().getWorld().getName().equalsIgnoreCase(world.getName())) {
                 task.regenerate();
+                count++;
+            }
+        }
+        for (DecayTask task : new HashSet<>(plugin.getDecayManager().getTasks())) {
+            if (task.getLocation().getWorld() == null) continue;
+            if (world == null || task.getLocation().getWorld().getName().equalsIgnoreCase(world.getName())) {
+                task.forceDecay();
                 count++;
             }
         }

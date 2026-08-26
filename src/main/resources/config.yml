@@ -29,6 +29,10 @@ obstruct-prevention:
   enabled: true
   radius: 1
 
+temp-build:
+  decay-time: 30
+  deny-drops: true
+
 # Deny drops from blocks affected will
 # Also denies exp drop.
 events:

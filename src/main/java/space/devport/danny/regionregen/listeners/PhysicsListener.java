@@ -14,7 +14,7 @@ public class PhysicsListener implements Listener {
 
     @EventHandler
     public void onPhysics(BlockPhysicsEvent event) {
-        if (!plugin.getConfig().getBoolean("disable-physics", true)) return;
+        if (!plugin.getConfig().getBoolean("events.physics.enabled", true)) return;
 
         Block changedBlock = event.getSourceBlock();
 

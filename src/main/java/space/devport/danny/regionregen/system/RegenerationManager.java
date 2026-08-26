@@ -28,7 +28,7 @@ public class RegenerationManager {
     }
 
     public void startTask(Block block, int delay) {
-        List<String> excludedBlocks = plugin.getConfig().getStringList("excluded-blocks");
+        List<String> excludedBlocks = plugin.getConfig().getStringList("events.break.excluded-blocks");
         Material material = block.getType();
         for (String excluded : excludedBlocks) {
             if (material.name().equalsIgnoreCase(excluded)) {

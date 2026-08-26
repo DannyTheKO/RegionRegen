@@ -16,6 +16,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import space.devport.danny.regionregen.RegionRegenPlugin;
 
+import java.util.Set;
+
 @RequiredArgsConstructor
 public class PlaceListener implements Listener {
 
@@ -23,18 +25,29 @@ public class PlaceListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlace(BlockPlaceEvent event) {
+        if (!plugin.getConfig().getBoolean("events.place.enabled", true)) return;
+
         Block block = event.getBlock();
+
+        if (plugin.getDecayManager().hasTaskAt(block.getLocation())) return;
 
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
         ApplicableRegionSet regions = query.getApplicableRegions(BukkitAdapter.adapt(block.getLocation()));
 
+        if (plugin.getConfig().getBoolean("events.place.assign-to-decay", true)) {
+            Set<String> regenBlocks = regions.queryValue(WorldGuardPlugin.inst().wrapPlayer(event.getPlayer()), RegionRegenPlugin.WG_BLOCK_REGEN_FLAG);
+            if (regenBlocks != null) {
+                int delay = plugin.getConfig().getInt("events.place.decay-time", 30);
+                plugin.getDecayManager().startDecay(block, delay);
+                return;
+            }
+        }
+
         StateFlag.State state = regions.queryValue(WorldGuardPlugin.inst().wrapPlayer(event.getPlayer()), RegionRegenPlugin.WG_TEMP_BUILD_FLAG);
         if (state != StateFlag.State.ALLOW) return;
 
-        if (plugin.getDecayManager().hasTaskAt(block.getLocation())) return;
-
-        int delay = plugin.getConfig().getInt("temp-build.decay-time", 30);
+        int delay = plugin.getConfig().getInt("events.place.decay-time", 30);
         plugin.getDecayManager().startDecay(block, delay);
     }
 

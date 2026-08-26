@@ -50,7 +50,7 @@ public class DecayTask implements Runnable {
                 RegionRegenPlugin.getInstance().getDecayManager().removeTask(this);
                 return;
             }
-            boolean denyDrops = RegionRegenPlugin.getInstance().getConfig().getBoolean("temp-build.deny-drops", true);
+            boolean denyDrops = RegionRegenPlugin.getInstance().getConfig().getBoolean("events.place.deny-drops", true);
             Material before = block.getType();
             if (denyDrops) {
                 block.setType(Material.AIR, false);
@@ -78,7 +78,7 @@ public class DecayTask implements Runnable {
                 RegionRegenPlugin.getInstance().getDecayManager().removeTask(this);
                 return;
             }
-            boolean denyDrops = RegionRegenPlugin.getInstance().getConfig().getBoolean("temp-build.deny-drops", true);
+            boolean denyDrops = RegionRegenPlugin.getInstance().getConfig().getBoolean("events.place.deny-drops", true);
             Material before = block.getType();
             if (denyDrops) {
                 block.setType(Material.AIR, false);

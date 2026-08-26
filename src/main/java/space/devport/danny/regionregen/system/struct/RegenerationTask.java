@@ -58,8 +58,8 @@ public class RegenerationTask implements Runnable {
                 return;
             }
 
-            if (RegionRegenPlugin.getInstance().getConfig().getBoolean("obstruct-prevention.enabled", false)) {
-                double range = RegionRegenPlugin.getInstance().getConfig().getDouble("obstruct-prevention.radius", 1);
+            if (RegionRegenPlugin.getInstance().getConfig().getBoolean("events.break.obstruct-prevention.enabled", false)) {
+                double range = RegionRegenPlugin.getInstance().getConfig().getDouble("events.break.obstruct-prevention.radius", 1);
                 Collection<Entity> nearbyEntities = location.getWorld().getNearbyEntities(location, range, range, range);
 
                 if (nearbyEntities.stream().anyMatch(e -> e.getType() == EntityType.PLAYER)) {

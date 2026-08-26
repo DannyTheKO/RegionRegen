@@ -47,9 +47,11 @@ public class ExplosionListener implements Listener {
 
         boolean hasFlaggedBlock = false;
 
-        int delaySeconds = plugin.getConfig().getInt("default-delay", 10);
+        int delaySeconds = plugin.getConfig().getInt("events.break.default-delay", 10);
 
         for (Block originalBlock : listBlock) {
+            if (plugin.getDecayManager().hasTaskAt(originalBlock.getLocation())) continue;
+
             ApplicableRegionSet regions = query.getApplicableRegions(BukkitAdapter.adapt(originalBlock.getLocation()));
 
             Set<String> regenBlocks = regions.queryValue(null, RegionRegenPlugin.WG_BLOCK_REGEN_FLAG);

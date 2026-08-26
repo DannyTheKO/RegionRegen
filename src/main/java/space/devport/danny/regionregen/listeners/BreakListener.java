@@ -38,17 +38,22 @@ public class BreakListener implements Listener {
         LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
         ApplicableRegionSet regions = query.getApplicableRegions(BukkitAdapter.adapt(originalBlock.getLocation()));
 
+        if (plugin.getDecayManager().hasTaskAt(originalBlock.getLocation())) {
+            plugin.getDecayManager().cancelAt(originalBlock.getLocation());
+            return;
+        }
+
         Set<String> regenBlocks = regions.queryValue(localPlayer, RegionRegenPlugin.WG_BLOCK_REGEN_FLAG);
 
         // Null Gate
         if (regenBlocks == null) return;
 
-        List<String> excludedBlocks = plugin.getConfig().getStringList("excluded-blocks");
+        List<String> excludedBlocks = plugin.getConfig().getStringList("events.break.excluded-blocks");
         for (String excluded : excludedBlocks) {
             if (originalBlock.getType().name().equalsIgnoreCase(excluded)) return;
         }
 
-        int delaySeconds = plugin.getConfig().getInt("default-delay", 10);
+        int delaySeconds = plugin.getConfig().getInt("events.break.default-delay", 10);
 
         for (String blockSyntax : regenBlocks) {
 

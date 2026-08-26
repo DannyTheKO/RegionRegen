@@ -29,11 +29,11 @@ obstruct-prevention:
   enabled: true
   radius: 1
 
+# Deny drops from blocks affected will
+# Also denies exp drop.
 events:
   break:
     enabled: true
-    # Deny drops from blocks affected?
-    # Note: Also denies exp drop.
     deny-drops: true
   explosion:
     enabled: false

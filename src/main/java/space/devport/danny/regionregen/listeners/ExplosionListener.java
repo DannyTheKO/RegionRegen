@@ -13,6 +13,8 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import space.devport.danny.regionregen.RegionRegenPlugin;
 
+import space.devport.danny.regionregen.util.MaterialMatcher;
+
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +22,8 @@ import java.util.Set;
 public class ExplosionListener implements Listener {
 
     private final RegionRegenPlugin plugin;
+
+    private final MaterialMatcher materialMatcher;
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -47,21 +51,38 @@ public class ExplosionListener implements Listener {
 
         boolean hasFlaggedBlock = false;
 
-        int delaySeconds = plugin.getConfig().getInt("events.break.default-delay", 10);
+        int delaySeconds = plugin.getBreakDelay();
+        List<String> excludedBlocks = plugin.getConfig().getStringList("events.break.excluded-blocks");
 
         for (Block originalBlock : listBlock) {
             if (plugin.getDecayManager().hasTaskAt(originalBlock.getLocation())) continue;
+
+            boolean excluded = false;
+            for (String pattern : excludedBlocks) {
+                if (materialMatcher.matches(pattern, originalBlock.getType())) {
+                    excluded = true;
+                    break;
+                }
+            }
+            if (excluded) continue;
 
             ApplicableRegionSet regions = query.getApplicableRegions(BukkitAdapter.adapt(originalBlock.getLocation()));
 
             Set<String> regenBlocks = regions.queryValue(null, RegionRegenPlugin.WG_BLOCK_REGEN_FLAG);
             if (regenBlocks == null) continue;
 
-            if (!plugin.getRegenerationManager().hasTaskAt(originalBlock.getLocation())) {
-                plugin.getRegenerationManager().startTask(originalBlock, delaySeconds);
-            }
+            for (String blockSyntax : regenBlocks) {
+                MaterialMatcher.BlockSpec spec = materialMatcher.parse(blockSyntax, delaySeconds);
+                if (spec == null) continue;
+                if (!materialMatcher.matches(spec.materialPattern(), originalBlock.getType())) continue;
 
-            hasFlaggedBlock = true;
+                int effectiveDelay = spec.delaySeconds();
+                if (!plugin.getRegenerationManager().hasTaskAt(originalBlock.getLocation())) {
+                    plugin.getRegenerationManager().startTask(originalBlock, effectiveDelay);
+                }
+                hasFlaggedBlock = true;
+                break;
+            }
         }
 
         return hasFlaggedBlock;

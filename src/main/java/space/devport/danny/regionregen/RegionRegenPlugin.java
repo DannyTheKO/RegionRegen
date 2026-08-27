@@ -53,19 +53,27 @@ public class RegionRegenPlugin extends JavaPlugin {
         running = registerFlag();
     }
 
+    public int getBreakDelay() {
+        if (getConfig().contains("events.break.default-delay")) {
+            return getConfig().getInt("events.break.default-delay", 10);
+        }
+        return getConfig().getInt("default-delay", 10);
+    }
+
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        migrateConfig();
 
+        materialMatcher = new MaterialMatcher();
         regenerationManager = new RegenerationManager();
         decayManager = new DecayManager();
-        materialMatcher = new MaterialMatcher();
         messageManager = new MessageManager(this);
 
         getServer().getPluginManager().registerEvents(new BreakListener(this, materialMatcher), this);
         getServer().getPluginManager().registerEvents(new PlaceListener(this, materialMatcher), this);
-        getServer().getPluginManager().registerEvents(new ExplosionListener(this), this);
+        getServer().getPluginManager().registerEvents(new ExplosionListener(this, materialMatcher), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(this), this);
 
         RegionRegenCommand cmd = new RegionRegenCommand(this);
@@ -83,10 +91,24 @@ public class RegionRegenPlugin extends JavaPlugin {
 
     public void reload(CommandSender sender) {
         reloadConfig();
+        migrateConfig();
 
         sender.sendMessage(messageManager.prefixed("&7Reloaded."));
         if (!running)
             registerFlag();
+    }
+
+    private void migrateConfig() {
+        boolean changed = false;
+        if (getConfig().contains("default-delay") && !getConfig().contains("events.break.default-delay")) {
+            getConfig().set("events.break.default-delay", getConfig().getInt("default-delay"));
+            changed = true;
+        }
+        if (getConfig().contains("excluded-blocks") && !getConfig().contains("events.break.excluded-blocks")) {
+            getConfig().set("events.break.excluded-blocks", getConfig().getStringList("excluded-blocks"));
+            changed = true;
+        }
+        if (changed) saveConfig();
     }
 
     private boolean registerFlag() {

@@ -53,7 +53,7 @@ public class BreakListener implements Listener {
             if (materialMatcher.matches(pattern, originalBlock.getType())) return;
         }
 
-        int delaySeconds = plugin.getConfig().getInt("events.break.default-delay", 10);
+        int delaySeconds = plugin.getBreakDelay();
 
         for (String blockSyntax : regenBlocks) {
 

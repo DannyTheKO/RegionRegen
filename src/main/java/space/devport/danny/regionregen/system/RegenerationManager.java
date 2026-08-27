@@ -1,7 +1,6 @@
 package space.devport.danny.regionregen.system;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import space.devport.danny.regionregen.RegionRegenPlugin;
 import space.devport.danny.regionregen.system.struct.RegenerationTask;
@@ -29,10 +28,9 @@ public class RegenerationManager {
 
     public void startTask(Block block, int delay) {
         List<String> excludedBlocks = plugin.getConfig().getStringList("events.break.excluded-blocks");
-        Material material = block.getType();
-        for (String excluded : excludedBlocks) {
-            if (material.name().equalsIgnoreCase(excluded)) {
-                plugin.debug("Block " + material.name() + " is excluded from regeneration.");
+        for (String pattern : excludedBlocks) {
+            if (plugin.getMaterialMatcher().matches(pattern, block.getType())) {
+                plugin.debug("Block " + block.getType().name() + " is excluded from regeneration.");
                 return;
             }
         }

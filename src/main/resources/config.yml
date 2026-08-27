@@ -23,12 +23,6 @@ events:
   explosion:
     enabled: false
     deny-drops: false
-  fire:
-    enabled: true
-  lava:
-    enabled: true
-  piston:
-    enabled: true
   physics:
     enabled: true
 

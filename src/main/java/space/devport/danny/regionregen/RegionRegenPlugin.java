@@ -67,9 +67,6 @@ public class RegionRegenPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new ExplosionListener(this), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(this), this);
-        getServer().getPluginManager().registerEvents(new FireListener(this), this);
-        getServer().getPluginManager().registerEvents(new LavaListener(this), this);
-        getServer().getPluginManager().registerEvents(new PistonListener(this), this);
 
         RegionRegenCommand cmd = new RegionRegenCommand(this);
         getCommand("regionregen").setExecutor(cmd);

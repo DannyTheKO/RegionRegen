@@ -1,31 +1,106 @@
 # Configuration for ${project.name}
-#
 # Version: ${project.version}
+# Flag Compatibility: see docs/flag-compatibility.md for WorldGuard / WGEFP delegation
 
+# Prefix for all plugin messages. Supports color codes with &.
 plugin-prefix: '&6RegionRegen &8>> '
+
+# Enable verbose debug logging to console.
 debug-enabled: false
 
+# All block behaviors are grouped under "events".
+# Each sub-section controls one Bukkit event type inside WorldGuard regions
+# flagged with rr-block-regen (regen) or rr-temp-build (decay).
+# Delegated protections: fire -> fire-spread, lava -> lava-flow, piston -> pistons.
+# See docs/flag-compatibility.md for WorldGuard flag equivalents to use instead.
 events:
+
+  # BlockBreakEvent — regeneration of naturally generated blocks.
+  # Uses rr-block-regen flag: "STONE:10, DIRT:5, ~.*_LOG:20".
+  # Not redundant with WG block-break / WGEFP deny-block-break which deny breaking entirely.
   break:
+    # Whether break-triggered regeneration is active.
     enabled: true
+    # If true, broken blocks do not drop items or experience.
+    # Complements WGEFP deny-item-drops for per-material filtering.
     deny-drops: true
+    # Default delay (seconds) before a broken block regenerates.
+    # Per-material delays from rr-block-regen flag override this (e.g. STONE:5).
     default-delay: 10
+    # Materials that never regenerate, even if matched by the flag.
+    # Use exact Bukkit Material names or regex with ~ prefix (e.g. ~.*_SHULKER_BOX).
+    # Dungeon/POI defaults: tile entities, storage and technical blocks that would
+    # cause dupes, inventory loss or exploits if auto-regenerated.
     excluded-blocks:
       - FIRE
+    # Prevent regeneration while a player stands on the block location.
+    # Blocks stay as AIR until the area is clear, then regenerates.
     obstruct-prevention:
       enabled: true
+      # Radius (blocks) to check for nearby players.
       radius: 1
+
+  # BlockPlaceEvent / PlayerBucketEmptyEvent — decay of player-placed blocks.
+  # Uses rr-temp-build StateFlag (allow) or rr-block-regen with assign-to-decay.
+  # Not covered by WG block-place / WGEFP allow/deny-block-place.
   place:
+    # Whether place-triggered decay is active.
     enabled: true
+    # Seconds before a placed block disappears (set to AIR).
     decay-time: 30
+    # If true, decaying blocks do not drop their item when removed.
     deny-drops: true
+    # If true, blocks placed inside rr-block-regen regions decay instead of
+    # becoming permanent regenerating terrain. Fixes exploit: place dirt -> break -> would regen.
     assign-to-decay: true
+    # Materials that never decay, even if placed inside a temp-build region.
+    # Use exact Bukkit Material names or regex with ~ prefix (e.g. ~.*_SHULKER_BOX).
+    # Dungeon/POI defaults: abuse blocks players shouldn't spam in instanced areas.
+    # Excluded = stays permanently (no decay) to avoid inventory void & grief;
+    # block with WG deny-block-place if you want to deny placement entirely.
+    excluded-blocks:
+      - CHEST
+      - TRAPPED_CHEST
+      - BARREL
+      - ENDER_CHEST
+      - ~.*_SHULKER_BOX
+      - HOPPER
+      - DROPPER
+      - DISPENSER
+      - FURNACE
+      - SPAWNER
+      - BEACON
+      - TNT
+      - ~.*_ANVIL
+      - ENCHANTING_TABLE
+      - OBSIDIAN
+      - CRYING_OBSIDIAN
+      - RESPAWN_ANCHOR
+      - PISTON
+      - STICKY_PISTON
+      - OBSERVER
+      - ~.*_BED
+
+  # EntityExplodeEvent / BlockExplodeEvent — explosion regeneration.
+  # Alternative to WorldGuard explosion flags (creeper-explosion, other-explosion, tnt,
+  # ghast-fireball, enderdragon-block-damage, wither-damage). Set those to deny to
+  # prevent damage instead of regenerating. Keep disabled if using WG flags.
   explosion:
+    # Whether explosion-triggered regeneration is active. Off by default — enable
+    # only if you prefer regen over WG deny protection.
     enabled: false
+    # If true, explosion-broken regen blocks do not drop items (sets yield to 0).
     deny-drops: false
+
+  # BlockPhysicsEvent / EntityChangeBlockEvent / BlockFromToEvent — protect pending
+  # regen/decay locations from physics, falling blocks, and fluid flow.
+  # Prevents grass/flowers from breaking when block below is pending AIR.
+  # No WorldGuard equivalent — required for stable regeneration.
   physics:
+    # Whether physics protection for pending blocks is active.
     enabled: true
 
+# Messages sent to players. Color codes with & are supported.
 messages:
   reloaded: '&7Reloaded.'
   invalid-world: '&cWorld &f%param% &cis invalid.'

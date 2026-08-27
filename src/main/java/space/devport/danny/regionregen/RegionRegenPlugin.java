@@ -64,7 +64,7 @@ public class RegionRegenPlugin extends JavaPlugin {
         messageManager = new MessageManager(this);
 
         getServer().getPluginManager().registerEvents(new BreakListener(this, materialMatcher), this);
-        getServer().getPluginManager().registerEvents(new PlaceListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlaceListener(this, materialMatcher), this);
         getServer().getPluginManager().registerEvents(new ExplosionListener(this), this);
         getServer().getPluginManager().registerEvents(new PhysicsListener(this), this);
 

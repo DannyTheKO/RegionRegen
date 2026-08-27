@@ -15,7 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import space.devport.danny.regionregen.RegionRegenPlugin;
+import space.devport.danny.regionregen.util.MaterialMatcher;
 
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -23,11 +25,18 @@ public class PlaceListener implements Listener {
 
     private final RegionRegenPlugin plugin;
 
+    private final MaterialMatcher materialMatcher;
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlace(BlockPlaceEvent event) {
         if (!plugin.getConfig().getBoolean("events.place.enabled", true)) return;
 
         Block block = event.getBlock();
+
+        List<String> excludedBlocks = plugin.getConfig().getStringList("events.place.excluded-blocks");
+        for (String pattern : excludedBlocks) {
+            if (materialMatcher.matches(pattern, block.getType())) return;
+        }
 
         if (plugin.getDecayManager().hasTaskAt(block.getLocation())) return;
 
